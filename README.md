@@ -44,8 +44,6 @@ Replace your-username, your-password, and your-database with your MongoDB creden
 
 Start the server:
 
-bash
-
     node app.js
 
     The server will run on port 3000 by default. You can access it at http://localhost:3000.
