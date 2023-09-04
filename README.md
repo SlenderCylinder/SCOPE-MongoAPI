@@ -5,7 +5,10 @@
 
 ## Node server defining MongoDB API endpoints for SCOPE app
 
-This will will create a basic node server accepting API calls at http://localhost:3000/beneficiaries. Port can be changed.
+This will will create a basic node server accepting API calls at http://localhost:3000/beneficiaries. 
+
+> Port can be changed in app.js file;
+> Fileds can be changed in beneficiary.js inside the models folder
 
 ## Requirements
 
