@@ -23,8 +23,6 @@ Before you begin, ensure you have met the following requirements:
 
     Navigate to the project directory:
 
-    bash
-
 cd your-project
 
 Install the project dependencies:
