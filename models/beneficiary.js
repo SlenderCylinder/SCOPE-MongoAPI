@@ -9,17 +9,19 @@ const purchaseHistorySchema = new mongoose.Schema({
 });
 
 const beneficiarySchema = new mongoose.Schema({
-  name: {
+  firstName:{
     type: String,
     required: true,
   },
+  lastName: String,
   balance: {
     type: Number,
     default: 10000, // default balance
   },
-  firstName: String,
-  lastName: String,
-  uniqID: String,
+  uniqID: {
+    type: Number,
+    required: true,
+  },
   purchaseHistory: [purchaseHistorySchema],
   // extra space for more fields if needed
 });
