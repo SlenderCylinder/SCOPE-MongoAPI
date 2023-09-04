@@ -36,10 +36,11 @@ bash
 Usage
 
     Create an .env file in the project root directory and add your MongoDB connection URI. For example:
+    
+    MONGODB_URI=mongodb+srv://your-username:your-password@cluster0.mongodb.net/your-database?retryWrites=true&w=majority
 
     bash
 
-MONGODB_URI=mongodb+srv://your-username:your-password@cluster0.mongodb.net/your-database?retryWrites=true&w=majority
 
 Replace your-username, your-password, and your-database with your MongoDB credentials and database name.
 
