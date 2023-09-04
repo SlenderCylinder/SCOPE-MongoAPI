@@ -22,18 +22,18 @@ Before you begin, ensure you have met the following requirements:
 
 1. Clone the repository:
 
-   ```
-   git clone https://github.com/your-username/your-project.git
+   
+         git clone https://github.com/your-username/your-project.git
 
-   Navigate to the project directory:
+2. Navigate to the project directory:
 
-cd your-project
+         cd <path-to-your-project>
 
-Install the project dependencies:
+3. Install the project dependencies:
 
-    npm install
+          npm install
 
-Usage
+## Usage
 
     Create an .env file in the project root directory and add your MongoDB connection URI. For example:
     
@@ -42,7 +42,7 @@ Usage
 
 Replace your-username, your-password, and your-database with your MongoDB credentials and database name.
 
-Start the server:
+## Start the server:
 
     node app.js
 
