@@ -5,10 +5,17 @@ const cors = require("cors");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
+const cors = require('cors'); 
 const Beneficiary = require("./models/beneficiary"); // Updated import
 
 const app = express();
 const port = 3000;
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with your frontend's URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow cookies and authorization headers
+}));
 
 app.use(bodyParser.json());
 admin.initializeApp(functions.config().firebase);
