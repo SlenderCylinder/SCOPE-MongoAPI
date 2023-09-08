@@ -1,5 +1,5 @@
 // models/beneficiary.js
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const purchaseHistorySchema = new mongoose.Schema({
   itemName: String,
@@ -9,7 +9,7 @@ const purchaseHistorySchema = new mongoose.Schema({
 });
 
 const beneficiarySchema = new mongoose.Schema({
-  firstName:{
+  firstName: {
     type: String,
     required: true,
   },
@@ -18,13 +18,8 @@ const beneficiarySchema = new mongoose.Schema({
     type: Number,
     default: 10000, // default balance
   },
-  uniqID: {
-    type: Number,
-    required: true,
-  },
   purchaseHistory: [purchaseHistorySchema],
   // extra space for more fields if needed
 });
 
-module.exports = mongoose.model('Beneficiary', beneficiarySchema);
-
+module.exports = mongoose.model("Beneficiary", beneficiarySchema);

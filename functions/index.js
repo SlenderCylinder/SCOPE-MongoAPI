@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
@@ -12,6 +13,9 @@ const port = 3000;
 app.use(bodyParser.json());
 admin.initializeApp(functions.config().firebase);
 
+// Enable CORS
+app.use(cors({ origin: true }));
+
 // Create a new beneficiary
 app.post("/beneficiaries", async (req, res) => {
   // Updated endpoint
@@ -21,6 +25,20 @@ app.post("/beneficiaries", async (req, res) => {
     res.status(201).send(beneficiary);
   } catch (error) {
     res.status(400).send(error);
+  }
+});
+
+app.get("/beneficiaries/:id", async (req, res) => {
+  console.log(req.params);
+  const { id } = req.params;
+  try {
+    const beneficiary = await Beneficiary.findById(id);
+    if (!beneficiary) {
+      return res.status(404).send({ error: "Beneficiary not found" });
+    }
+    res.send(beneficiary);
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 
@@ -38,6 +56,45 @@ app.put("/beneficiaries/:id", async (req, res) => {
     res.send(beneficiary);
   } catch (error) {
     res.status(400).send(error);
+  }
+});
+
+app.post("/beneficiaries/updateCart", async (req, res) => {
+  const { cartItems, id } = req.body;
+
+  console.log("id:", id);
+
+  try {
+    // Find the user by ID
+    const user = await Beneficiary.findById(id);
+
+    console.log("user:", user);
+
+    const { balance } = user;
+
+    // Calculate the total price of the cart items
+    const totalPrice = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    // Update the purchase history and balance fields
+    const purchaseHistory = cartItems.map((item) => ({
+      itemName: item.name,
+      itemPrice: item.price,
+      itemQuantity: item.quantity,
+      dateOfPurchase: new Date(),
+    }));
+    user.purchaseHistory.push(...purchaseHistory);
+    balance.toFixed(2) -= totalPrice;
+
+    // Save the updated user details
+    await user.save();
+
+    res.json({ message: "Cart updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -59,14 +116,12 @@ app.get("/beneficiaries", async (req, res) => {
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+})
+.then(() => {
+  console.log(`Server is running on port ${port}`);
+})
+.catch((error) => {
+  console.error("MongoDB connection error:", error);
 });
 
 exports.app = functions.https.onRequest(app);
