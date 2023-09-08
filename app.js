@@ -3,11 +3,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const Beneficiary = require('./models/beneficiary'); // Updated import
-
+const cors = require('cors'); 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+
+
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with your frontend's URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow cookies and authorization headers
+}));
 
 // Create a new beneficiary
 app.post('/beneficiaries', async (req, res) => { // Updated endpoint

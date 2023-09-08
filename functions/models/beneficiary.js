@@ -18,10 +18,6 @@ const beneficiarySchema = new mongoose.Schema({
     type: Number,
     default: 10000, // default balance
   },
-  uniqID: {
-    type: Number,
-    required: true,
-  },
   purchaseHistory: [purchaseHistorySchema],
   // extra space for more fields if needed
 });
