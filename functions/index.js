@@ -1,21 +1,24 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
-const cors = require('cors'); 
-const Beneficiary = require("./models/beneficiary"); // Updated import
+const cors = require("cors");
+const Beneficiary = require("./models/beneficiary");
+const User = require("./models/User");
 
 const app = express();
 const port = 3000;
 
-app.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend's URL
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // Allow cookies and authorization headers
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Replace with your frontend's URL
+    // origin: "http://localhost:8081", // Replace with your frontend's URL
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // Allow cookies and authorization headers
+  })
+);
 
 app.use(bodyParser.json());
 admin.initializeApp(functions.config().firebase);
@@ -25,9 +28,8 @@ app.use(cors({ origin: true }));
 
 // Create a new beneficiary
 app.post("/beneficiaries", async (req, res) => {
-  // Updated endpoint
   try {
-    const beneficiary = new Beneficiary(req.body); // Updated model
+    const beneficiary = new Beneficiary(req.body);
     await beneficiary.save();
     res.status(201).send(beneficiary);
   } catch (error) {
@@ -35,6 +37,28 @@ app.post("/beneficiaries", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    console.log(username, password);
+
+    res.send("sucess").status(201);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+app.post("/createUser", async (req, res) => {
+  try {
+    const { user, password } = req.body;
+    const newUser = new User({ user, password });
+    await newUser.save();
+    res.status(201).send("User created successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
+});
 app.get("/beneficiaries/:id", async (req, res) => {
   console.log(req.params);
   const { id } = req.params;
@@ -51,7 +75,6 @@ app.get("/beneficiaries/:id", async (req, res) => {
 
 // Update a beneficiary by ID
 app.put("/beneficiaries/:id", async (req, res) => {
-  // Updated endpoint
   const { id } = req.params;
   try {
     const beneficiary = await Beneficiary.findByIdAndUpdate(id, req.body, {
@@ -77,8 +100,6 @@ app.post("/beneficiaries/updateCart", async (req, res) => {
 
     console.log("user:", user);
 
-    const { balance } = user;
-
     // Calculate the total price of the cart items
     const totalPrice = cartItems.reduce(
       (total, item) => total + item.price * item.quantity,
@@ -93,7 +114,7 @@ app.post("/beneficiaries/updateCart", async (req, res) => {
       dateOfPurchase: new Date(),
     }));
     user.purchaseHistory.push(...purchaseHistory);
-    balance.toFixed(2) -= totalPrice;
+    user.balance -= parseFloat(totalPrice.toFixed(2));
 
     // Save the updated user details
     await user.save();
@@ -111,7 +132,6 @@ app.get("/", (req, res) => {
 
 // Retrieve all beneficiaries
 app.get("/beneficiaries", async (req, res) => {
-  // Updated endpoint
   try {
     const beneficiaries = await Beneficiary.find();
     res.send(beneficiaries);
@@ -120,15 +140,16 @@ app.get("/beneficiaries", async (req, res) => {
   }
 });
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log(`Server is running on port ${port}`);
-})
-.catch((error) => {
-  console.error("MongoDB connection error:", error);
-});
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log(`Server is running on port ${port}`);
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+  });
 
 exports.app = functions.https.onRequest(app);
