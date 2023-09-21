@@ -13,10 +13,9 @@ const port = 3000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with your frontend's URL
-    // origin: "http://localhost:8081", // Replace with your frontend's URL
+    origin: "http://localhost:5173",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true, // Allow cookies and authorization headers
+    credentials: true,
   })
 );
 
@@ -29,7 +28,19 @@ app.use(cors({ origin: true }));
 // Create a new beneficiary
 app.post("/beneficiaries", async (req, res) => {
   try {
-    const beneficiary = new Beneficiary(req.body);
+    let firstName = "John";
+    let lastName = "Smith";
+    let scopeId = 123456;
+    let balance = 10000;
+    let purchaseHistory = [];
+
+    const beneficiary = new Beneficiary({
+      firstName,
+      lastName,
+      scopeId,
+      balance,
+      purchaseHistory,
+    });
     await beneficiary.save();
     res.status(201).send(beneficiary);
   } catch (error) {
@@ -42,7 +53,16 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     console.log(username, password);
 
-    res.send("sucess").status(201);
+    res.send("success").status(201);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+app.post("/login/pin", async (req, res) => {
+  try {
+    const { pin } = req.body;
+    console.log(pin);
+    res.send("success").status(201);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -151,5 +171,9 @@ mongoose
   .catch((error) => {
     console.error("MongoDB connection error:", error);
   });
+
+app.listen(port, () => {
+  console.log(`app listening at http://localhost:${port}`);
+});
 
 exports.app = functions.https.onRequest(app);
